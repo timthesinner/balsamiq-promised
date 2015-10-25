@@ -82,7 +82,11 @@ Balsamiq.prototype.render = function(bmml, jpg) {
     this.rendering = true;
     return Q.promise(function(resolve, reject, notify) {
       exec([self.exe, 'export', bmml, jpg])
-        .timeout(20000, {msg:'Render took longer than 20 seconds.'})
+        .timeout(20000, {
+          err:'Render took longer than 20 seconds.',
+          bmml: bmml,
+          jpg: jpg
+        })
         .then(function() {
           var _jpg = stat(jpg);
           if (_jpg) { 
