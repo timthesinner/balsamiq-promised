@@ -1,6 +1,6 @@
 {
   "name": "balsamiq-promised",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Promise wrapper around the Balsamiq binary for rendering mocks from bmml",
   "main": "index.js",
   "scripts": {
