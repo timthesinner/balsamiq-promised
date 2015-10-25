@@ -1,0 +1,31 @@
+{
+  "name": "balsamiq-promised",
+  "version": "1.0.0",
+  "description": "Promise wrapper around the Balsamiq binary for rendering mocks from bmml",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timthesinner/balsamiq-promised.git"
+  },
+  "keywords": [
+    "balsamiq",
+    "promise",
+    "promised",
+    "bmml",
+    "render"
+  ],
+  "author": "TimTheSinner",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/timthesinner/balsamiq-promised/issues"
+  },
+  "homepage": "https://github.com/timthesinner/balsamiq-promised#readme",
+  "dependencies": {
+    "exec-promised": "^1.4.0",
+    "q": "^1.4.1",
+    "underscore": "^1.8.3"
+  }
+}
