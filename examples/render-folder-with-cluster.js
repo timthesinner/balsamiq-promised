@@ -35,14 +35,35 @@ if (!String.prototype.endsWith) {
 var Q = require('q'),
     _ = require('underscore'),
     path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    slave = require('express')(),
+    master = require('express')(),
+    request = require('request');
+
+var cinstance = slave.listen(1337, function() {
+  var host = cinstance.address().address;
+  var port = cinstance.address().port;
+  console.log('Cluster slave listening at http://%s:%s', host, port);
+});
+
+var sinstance = master.listen(1338, function() {
+  var host = sinstance.address().address;
+  var port = sinstance.address().port;
+  console.log('Cluster master listening at http://%s:%s', host, port);
+});
     
-var balsamiq = require('../lib/index')();
+var client = require('../lib/index').client({ listener: slave, request: request, target: path.resolve('./__data__/target.bmml'), dest: path.resolve('./__data__/dest.png') });
+var server = require('../lib/index').server({ server: master, request: request });
 
 var readdir = Q.denodeify(fs.readdir),
     folder = path.resolve(process.argv[2]);
 
-readdir(folder).then(function(files) {
+client.register(
+  { host:'localhost', port:cinstance.address().port },
+  { host:'localhost', port:sinstance.address().port }
+).then(function(registered) {
+  return readdir(folder);
+}).then(function(files) {
   var bmmls = _.compact(_.map(files, function(bmml) { 
     if(bmml.endsWith('.bmml')) {
       return path.join(folder, bmml);
@@ -52,7 +73,7 @@ readdir(folder).then(function(files) {
   console.log('Rendering the following mocks\n', bmmls);
   
   return Q.all(_.map(bmmls, function(bmml) {
-    return balsamiq.render(bmml, path.resolve(path.join('./', '__data__', path.basename(bmml).replace('.bmml', '.png'))))
+    return server.render(bmml, path.resolve(path.join('./', '__data__', path.basename(bmml).replace('.bmml', '.png'))))
             .then(function(jpg) {
               console.log('Rendered:', jpg);
             });
@@ -61,4 +82,6 @@ readdir(folder).then(function(files) {
   throw err;
 }).done(function() {
   console.log('Finished');
+  cinstance.close();
+  sinstance.close();
 });
